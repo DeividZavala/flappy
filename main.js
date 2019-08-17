@@ -136,6 +136,7 @@ function gameOver() {
 
 function reset() {
   flappy.y = 150;
+  audio.currentTime = 0;
   pipes = [];
   flappy.userPull = 0;
   interval = undefined;
