@@ -2,7 +2,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 let frames = 0;
 let gravity = 0.1;
-const pipes = [];
+let pipes = [];
 let interval;
 let score = 0;
 let audio = new Audio();
@@ -22,6 +22,11 @@ class Flappy {
     this.image.src = "images/flappy.png";
   }
 
+  reset() {
+    this.vy = 2;
+    this.userPull = 0;
+  }
+
   collision(item) {
     return (
       this.x < item.x + item.width &&
@@ -33,7 +38,10 @@ class Flappy {
 
   draw() {
     this.vy = this.vy + (gravity - this.userPull);
-    if (this.y + this.height < canvas.height) {
+    if (this.y + this.vy < 0) {
+      this.y = 0;
+      this.vy = 0;
+    } else if (this.y + this.height < canvas.height) {
       this.y += this.vy;
     } else {
       gameOver();
@@ -122,16 +130,28 @@ function gameOver() {
   audio.pause();
   ctx.fillText("GameOver morro", 235, 200);
   clearInterval(interval);
+  reset();
+  flappy.reset();
+}
+
+function reset() {
+  flappy.y = 150;
+  pipes = [];
+  flappy.userPull = 0;
   interval = undefined;
 }
 
 function start() {
+  if (interval) return;
   document.querySelector("button").disabled = true;
   audio.play();
   interval = setInterval(update, 1000 / 60);
 }
 
 document.onkeydown = function(e) {
+  if (e.keyCode === 82) {
+    start();
+  }
   if (e.keyCode == 32) {
     flappy.userPull = 0.3;
   }
